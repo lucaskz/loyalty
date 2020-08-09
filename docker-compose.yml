@@ -1,0 +1,40 @@
+version: '3.1'
+services:
+  app:
+    container_name: loyalty-challenge-app
+    image: loyalty-challenge-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "8080:8080"
+    links:
+      - mongodb:mongo
+      - postgresql:postgresql
+    depends_on:
+    - postgresql
+    - mongodb
+  postgresql:
+    restart: always
+    volumes:
+      - db-data:/var/lilb/postgresql/data
+    image: postgres:12.3
+    ports:
+    - "5432:5432"
+    environment:
+    - POSTGRES_PASSWORD=password
+    - POSTGRES_USER=postgres
+    - POSTGRES_DB=loyalty_db
+  mongodb:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - 27017:2017
+    volumes:
+    - db-mongo:/var/lilb/mongo/data
+volumes:
+  db-data:
+  db-mongo:
